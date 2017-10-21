@@ -11,11 +11,11 @@ turtle.setundobuffer(1)  # limit turtle memory (performance)
 turtle.tracer(1)  # speeding the drawing
 
 
-class Pencil(turtle.Turtle):  # inhirit from turtle module
-    def __init__(self, spriteshape, color, startx, starty):
-        turtle.Turtle.__init__(self, shape=spriteshape)
+class Soul(turtle.Turtle):  # inhirit from turtle module
+    def __init__(self, soulshape, color, startx, starty):
+        turtle.Turtle.__init__(self, shape=soulshape)
         self.speed(0)  # animation speed
-        self.penup  # nothing on the screen
+        self.penup()  # nothing on the screen
         self.color(color)
         self.goto(startx, starty)
         self.speed = 1
@@ -34,12 +34,22 @@ class Pencil(turtle.Turtle):  # inhirit from turtle module
         elif self.ycor() < -290:
             self.sety(-290)
             self.rt(60)
+    # Collision detection
+    def is_collision(self, other):
+        if (self.xcor() >= (other.xcor() - 20)) and \
+            (self.xcor() <= (other.xcor() + 20)) and \
+            (self.ycor() >= (other.ycor() - 20)) and \
+            (self.ycor() <= (other.ycor() + 20)):
+                return True
+        else:
+            return False
 
 
 
-class Player(Pencil):
-    def __init__(self, spriteshape, color, startx, starty):
-        Pencil.__init__(self, spriteshape, color, startx, starty)
+
+class Player(Soul): # inhirit from Pencil class
+    def __init__(self, soulshape, color, startx, starty):
+        Soul.__init__(self, soulshape, color, startx, starty)
         self.speed = 4
         self.lives = 3
 
@@ -54,6 +64,12 @@ class Player(Pencil):
 
     def brk(self):
         self.speed -= 1
+
+class Evil(Soul): # inhirit from Pencil class
+    def __init__(self, soulshape, color, startx, starty):
+        Soul.__init__(self, soulshape, color, startx, starty)
+        self.speed = 6
+        self.setheading(random.randint(0, 360))
 
 class Game():
     def __init__(self):
@@ -80,6 +96,7 @@ class Game():
 game = Game()
 game.borders()
 player = Player("triangle", "white", 0, 0)
+enemy = Evil("circle", "red", -100, 0)
 
 # keyboard bindings
 
@@ -93,3 +110,10 @@ turtle.listen()
 
 while True:
     player.move()
+    enemy.move()
+
+    x = random.randint(-250, 250)
+    y = random.randint(-250, 250)
+    #collision with enemy
+    if(player.is_collision(enemy)):
+        enemy.goto(x,y)
