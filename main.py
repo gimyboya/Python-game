@@ -60,7 +60,7 @@ class Player(Soul): # inhirit from Soul class
     def __init__(self, soulshape, color, startx, starty):
         Soul.__init__(self, soulshape, color, startx, starty)
         self.speed = 2
-        self.lives = 3
+        self.lives = 7
         self.setheading(90)
 
     def turn_left(self):
@@ -218,11 +218,18 @@ turtle.onkeypress(player.down, "Down")
 turtle.onkeypress(missile.fire, "space")
 turtle.listen()
 
+START_TICKS = pygame.time.get_ticks() #start time
+
 #  Main game loop
 
 while True:
     turtle.update()
     time.sleep(0.03)
+    seconds = (pygame.time.get_ticks() - START_TICKS) / 1000  # calculate how many seconds
+    minutes = seconds / 60
+
+    if minutes > 1: # if more than 3 minutes close the game
+        break
 
     player.move()
     missile.move()
