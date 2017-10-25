@@ -178,14 +178,14 @@ class Game():
     def show_status(self):
         self.pen.undo()
         self.pen.color("white")
-        msg = "Score: %s" % self.score
+        msg = "Score: %s  Lives: %s" % (self.score, player.lives)
         self.pen.penup()
         self.pen.goto(-300, 310)
         self.pen.write(msg, font=("Arial", 16, "normal"))
 
 # Game initialization
 game = Game()
-game.show_status()
+
 
 # player shapes
 turtle.register_shape("player-u.gif")
@@ -203,7 +203,7 @@ player = Player("player-u.gif", "white", 0, 0)
 missile = Bullet("triangle", "yellow", 0, 0)
 enemies = []
 blood = []
-
+game.show_status()
 for i in range(7):
     enemies.append(Zombie("zombie-u.gif", "red", -100, 0))
 
@@ -222,13 +222,14 @@ START_TICKS = pygame.time.get_ticks() #start time
 
 #  Main game loop
 
-while True:
+while game.state == "playing":
     turtle.update()
     time.sleep(0.03)
+    # create a count down
     seconds = (pygame.time.get_ticks() - START_TICKS) / 1000  # calculate how many seconds
     minutes = seconds / 60
 
-    if minutes > 1: # if more than 3 minutes close the game
+    if minutes > 1: # if more than 1 minutes close the game
         break
 
     player.move()
@@ -246,6 +247,10 @@ while True:
             pygame.mixer.init()
             pygame.mixer.music.load("Death.mp3")
             pygame.mixer.music.play(loops=0, start=10.6)
+            player.lives -= 1
+            game.show_status()
+            if player.lives == 0:
+                game.state = "game over"
 
         # collision of missile with zombie
         if (zombie.is_collision(missile)):
